@@ -28,7 +28,7 @@
         <!-- HomeActivity should not be the launcher -->
         <activity
             android:name=".HomeActivity"
-            android:exported="false">
+            android:exported="true">
         </activity>
 
     </application>
