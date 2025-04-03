@@ -1,6 +1,9 @@
 package com.example.try2;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,7 +15,7 @@ public class HomeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
     private List<Product> productList;
-
+    private boolean doubleBackPressed =false;
 
 
     @Override
@@ -35,6 +38,20 @@ public class HomeActivity extends AppCompatActivity {
 
         adapter = new ProductAdapter(productList);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackPressed) {
+            super.onBackPressed(); // Exit the app
+            return;
+        }
+
+        this.doubleBackPressed = true;
+        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+
+        // Reset flag after 2 seconds
+        new Handler().postDelayed(() -> doubleBackPressed = false, 2000);
     }
 
 }
