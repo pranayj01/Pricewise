@@ -24,19 +24,22 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         recyclerView = findViewById(R.id.recycler_hot_deals);
+        adapter = new ProductAdapter(this, productList); // ✅ Will work now
 
         // Use LinearLayoutManager with HORIZONTAL orientation
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         productList = new ArrayList<>();
-        productList.add(new Product("Men Slim Jeans", "₹999", R.drawable.product1));
-        productList.add(new Product("Loose Fit Grey Jeans", "₹1,499", R.drawable.product2));
-        productList.add(new Product("Light Blue Jeans", "₹899", R.drawable.product3));
-        productList.add(new Product("Tapered Fit Blue Jeans", "₹2,299", R.drawable.product4));
-         // Add more items
+        productList.add(new Product(R.drawable.product1, "Men Slim Jeans", "₹999"));
+        productList.add(new Product(R.drawable.product2, "Loose Fit Grey Jeans", "₹1,499"));
+        productList.add(new Product(R.drawable.product3, "Light Blue Jeans", "₹899"));
+        productList.add(new Product(R.drawable.product4, "Tapered Fit Blue Jeans", "₹2,299"));
 
-        adapter = new ProductAdapter(productList);
+        // Add more items
+
+        adapter = new ProductAdapter(this, productList); // ✅ Pass context
+
         recyclerView.setAdapter(adapter);
     }
 
