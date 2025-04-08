@@ -6,18 +6,28 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class SignupActivity extends AppCompatActivity {
 
     private EditText nameInput, emailInput, passwordInput, confirmPasswordInput;
     private MaterialButton signupButton;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        mAuth = FirebaseAuth.getInstance();
 
         nameInput = findViewById(R.id.name_input);
         emailInput = findViewById(R.id.signup_email_input);
@@ -25,19 +35,12 @@ public class SignupActivity extends AppCompatActivity {
         confirmPasswordInput = findViewById(R.id.confirm_password_input);
         signupButton = findViewById(R.id.signup_button);
 
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-            }
-        });
+        signupButton.setOnClickListener(v -> registerUser());
 
         TextView loginRedirect = findViewById(R.id.login_redirect);
-        loginRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SignupActivity.this, MainActivity.class));
-            }
+        loginRedirect.setOnClickListener(v -> {
+            startActivity(new Intent(SignupActivity.this, MainActivity.class));
+            finish();
         });
     }
 
@@ -57,9 +60,37 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // If signup is successful, navigate to home activity
-        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                if (firebaseUser == null) {
+                    Toast.makeText(SignupActivity.this, "Signup failed: user is null", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String userId = firebaseUser.getUid();
+
+                HashMap<String, String> userData = new HashMap<>();
+                userData.put("name", name);
+                userData.put("email", email);
+
+                FirebaseDatabase.getInstance().getReference("Users")
+                        .child(userId)
+                        .setValue(userData)
+                        .addOnCompleteListener(dbTask -> {
+                            if (dbTask.isSuccessful()) {
+                                Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignupActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(SignupActivity.this, "Failed to save user info", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            } else {
+                Toast.makeText(SignupActivity.this, "Signup Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
