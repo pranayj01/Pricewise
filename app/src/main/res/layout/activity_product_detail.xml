@@ -26,13 +26,7 @@
             android:textColor="#000000" />
 
         <!-- Product Description -->
-        <TextView
-            android:id="@+id/product_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#444444"
-            android:layout_marginTop="4dp" />
+
 
         <!-- Price Row -->
         <LinearLayout
@@ -45,11 +39,11 @@
             <TextView
                 android:id="@+id/product_price"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:layout_height="match_parent"
+                android:text="₹1399"
                 android:textColor="#000000"
-                android:textStyle="bold"
-                android:text="₹1399" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/product_mrp"
@@ -93,6 +87,14 @@
             android:textColor="#888888"
             android:layout_marginTop="4dp" />
 
+        <TextView
+            android:id="@+id/product_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#444444"
+            android:layout_marginTop="4dp" />
+
         <!-- Flipkart Button -->
         <Button
             android:id="@+id/view_on_platform"
@@ -118,7 +120,6 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/price_history_placeholder"
             android:layout_marginTop="10dp" />
 
     </LinearLayout>
