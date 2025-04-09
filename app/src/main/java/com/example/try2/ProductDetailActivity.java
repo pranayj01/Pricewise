@@ -65,9 +65,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                 lowestLabel.setVisibility(TextView.GONE);
             }
 
+            // Load image with bitmap size optimization to prevent "Canvas: trying to draw too large bitmap" error
             Glide.with(this)
                     .load(product.getImageUrl())
                     .placeholder(R.drawable.placeholder_image)
+                    .override(1024, 1024) // Resize large images
+                    .centerInside()
                     .into(productImage);
             Button viewOnFlipkartButton = findViewById(R.id.view_on_platform);
 

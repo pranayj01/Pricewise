@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,9 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        // Optimize images loaded from layout
+        optimizeLayoutImages();
+
         mAuth = FirebaseAuth.getInstance();
 
         nameInput = findViewById(R.id.name_input);
@@ -42,6 +46,35 @@ public class SignupActivity extends AppCompatActivity {
             startActivity(new Intent(SignupActivity.this, MainActivity.class));
             finish();
         });
+    }
+
+    /**
+     * Optimize images loaded directly from layout XML
+     * This prevents "Canvas: trying to draw too large bitmap" errors
+     */
+    private void optimizeLayoutImages() {
+        try {
+            // Find all ImageViews with direct drawable references in the layout
+            ImageView googleIcon = findViewById(R.id.signup_google_icon);
+            ImageView flipkartIcon = findViewById(R.id.signup_flipkart_icon);
+            ImageView amazonIcon = findViewById(R.id.signup_amazon_icon);
+
+            // Use BitmapUtils to load images efficiently
+            if (googleIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, googleIcon, R.drawable.google);
+            }
+
+            if (flipkartIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, flipkartIcon, R.drawable.flipcart);
+            }
+
+            if (amazonIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, amazonIcon, R.drawable.amazon);
+            }
+        } catch (Exception e) {
+            // Log error but don't crash
+            e.printStackTrace();
+        }
     }
 
     private void registerUser() {

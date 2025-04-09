@@ -1,15 +1,22 @@
-// File: HomeActivity.java
 package com.example.try2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -20,7 +27,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
-    private final List<Product> productList = new ArrayList<>();
+    private final List<Product> fullProductList = new ArrayList<>();
+    private final List<Product> displayList = new ArrayList<>();
     private boolean doubleBackPressed = false;
 
     @Override
@@ -28,25 +36,57 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        optimizeLayoutImages();
+
         recyclerView = findViewById(R.id.recycler_hot_deals);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        adapter = new ProductAdapter(this, productList);
+        adapter = new ProductAdapter(this, displayList);
         recyclerView.setAdapter(adapter);
 
-        loadProduct(); // Use the existing getProduct() method
+        TextView viewMore = findViewById(R.id.view_more);
+        viewMore.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AllProductsActivity.class);
+            intent.putExtra("all_products", new Gson().toJson(fullProductList));
+            startActivity(intent);
+        });
+
+        loadProduct();
+    }
+
+    private void optimizeLayoutImages() {
+        try {
+            ImageView logoImage = findViewById(R.id.logo);
+            ImageView mainBgImage = findViewById(R.id.main_bg_image);
+
+            if (logoImage != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, logoImage, R.drawable.bg);
+            }
+
+            if (mainBgImage != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, mainBgImage, R.drawable.mainbg);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadProduct() {
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        Call<List<Product>> call = api.getProduct(); // ✅ Call the existing method
+        Call<List<Product>> call = api.getProduct();
 
         call.enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    productList.clear();
-                    productList.addAll(response.body());
+                    fullProductList.clear();
+                    fullProductList.addAll(response.body());
+
+                    // Shuffle and pick 5 random items for homepage
+                    displayList.clear();
+                    Collections.shuffle(fullProductList);
+                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
+
                     adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(HomeActivity.this, "Failed to fetch products.", Toast.LENGTH_SHORT).show();

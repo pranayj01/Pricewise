@@ -148,18 +148,21 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/signup_google_icon"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_margin="12dp"
                     android:src="@drawable/google" />
 
                 <ImageView
+                    android:id="@+id/signup_flipkart_icon"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="12dp"
                     android:src="@drawable/flipcart"/>
 
                 <ImageView
+                    android:id="@+id/signup_amazon_icon"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="12dp"

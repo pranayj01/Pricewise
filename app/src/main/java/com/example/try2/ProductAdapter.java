@@ -37,10 +37,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
 
-        // Load image
+        // Load image with bitmap size optimization to prevent "Canvas: trying to draw too large bitmap" error
+        // Use exact dimensions matching the layout (140dp width, 160dp height) with fitCenter
         Glide.with(context)
                 .load(product.getImageUrl())
                 .placeholder(R.drawable.placeholder_image)
+                .override(140, 160) // Match exactly the ImageView dimensions in layout
+                .fitCenter() // Use fitCenter to maintain aspect ratio while filling the view
                 .into(holder.productImage);
 
         // Set product data
