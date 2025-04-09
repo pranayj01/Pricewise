@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "147755014444",
-    "project_id": "try2-91fcd",
-    "storage_bucket": "try2-91fcd.firebasestorage.app"
+    "project_number": "1084415096465",
+    "project_id": "pricewise-ff04e",
+    "storage_bucket": "pricewise-ff04e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:147755014444:android:e28337aa72b06c5cc53489",
+        "mobilesdk_app_id": "1:1084415096465:android:28ae3b487d1a05cf1cb130",
         "android_client_info": {
           "package_name": "com.example.try2"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBgrubHos2i2cXl0VtXz9nsDV6_quuG6Po"
+          "current_key": "AIzaSyDnZXbAR_RXNOz8uYo2G_ryrztDXW-H78A"
         }
       ],
       "services": {
