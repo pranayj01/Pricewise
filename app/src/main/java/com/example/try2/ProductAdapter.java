@@ -2,6 +2,7 @@ package com.example.try2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -33,13 +36,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-        holder.productImage.setImageResource(product.getImageResId());
-        holder.productName.setText(product.getName());
+
+        // Load image
+        Glide.with(context)
+                .load(product.getImageUrl())
+                .placeholder(R.drawable.placeholder_image)
+                .into(holder.productImage);
+
+        // Set product data
+        holder.productName.setText(product.getTitle());
         holder.productPrice.setText(product.getPrice());
 
+        holder.productMrp.setText(product.getMrp());
+        holder.productMrp.setPaintFlags(holder.productMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+        holder.productDiscount.setText(product.getDiscount());
+
+        // Handle click
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductDetailActivity.class);
-            intent.putExtra("product", product); // Make sure Product implements Serializable
+            intent.putExtra("product", product); // Ensure Product implements Serializable
             context.startActivity(intent);
         });
     }
@@ -51,13 +67,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
-        TextView productName, productPrice;
+        TextView productName, productPrice, productMrp, productDiscount;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             productImage = itemView.findViewById(R.id.product_image);
             productName = itemView.findViewById(R.id.product_name);
             productPrice = itemView.findViewById(R.id.product_price);
+            productMrp = itemView.findViewById(R.id.product_mrp);               // ✅ newly added
+            productDiscount = itemView.findViewById(R.id.product_discount);     // ✅ newly added
         }
     }
 }

@@ -1,154 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="#F5F5F5"
-    android:gravity="center"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!-- App Header -->
-
-    <!-- Search & Track Section -->
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
-        android:background="@color/green"
-        android:padding="18dp">
+        android:orientation="vertical"
+        android:gravity="start"
+        android:paddingBottom="16dp">
 
+        <!-- Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/green"
+            android:padding="18dp">
 
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/bg" />
+
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="45dp"
+                android:layout_toEndOf="@id/logo"
+                android:text="PriceWise"
+                android:textColor="@color/darkblue"
+                android:textSize="48sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Main image -->
         <ImageView
-            android:id="@+id/logo"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/bg" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/mainbg" />
 
+        <!-- Headings -->
         <TextView
-            android:id="@+id/app_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="45dp"
-            android:layout_toEndOf="@id/logo"
-            android:text="PriceWise"
-            android:textColor="@color/darkblue"
-            android:textSize="48sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="Search and Track"
+            android:textColor="#0c1c34"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Notification Icons -->
-
-
-    </RelativeLayout>
-
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/mainbg" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Search and Track"
-        android:textColor="#0c1c34"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Search for products or enter a product URL"
-        android:textColor="#666666"
-        android:textSize="14sp" />
-
-    <!-- Search Box -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:background="@drawable/search_box_border">  <!-- Apply border -->
-
-        <EditText
-            android:id="@+id/search_input"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:hint="Paste the Link of the Product"
-            android:paddingStart="8dp"
-            android:textSize="16sp" />
-
-        <ImageView
-            android:id="@+id/search_icon"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/search" /> <!-- Set a search icon -->
-    </LinearLayout>
-
-
-    <!-- Search Preferences Link -->
-    <TextView
-        android:id="@+id/search_preferences"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:text=""
-        android:textColor="#6200EE"
-        android:textSize="14sp" />
-
-    <!-- Hot Deals Title with View More -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:gravity="center_vertical">
-
         <TextView
-            android:id="@+id/hot_deals_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Hot Deals"
-            android:textColor="@color/darkblue"
-            android:textSize="25sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/view_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View More "
-            android:textColor="@color/green"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:padding="4dp"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:text="Search for products or enter a product URL"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <!-- Search Box -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="@drawable/search_box_border">
+
+            <EditText
+                android:id="@+id/search_input"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Paste the Link of the Product"
+                android:paddingStart="8dp"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/search_icon"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/search" />
+        </LinearLayout>
+
+        <!-- Search Preferences -->
+        <TextView
+            android:id="@+id/search_preferences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:text=""
+            android:textColor="#6200EE"
+            android:textSize="14sp" />
+
+        <!-- Hot Deals Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/hot_deals_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hot Deals"
+                android:textColor="@color/darkblue"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/view_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View More "
+                android:textColor="@color/green"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:padding="4dp" />
+        </LinearLayout>
+
+        <!-- Hot Deals RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_hot_deals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:nestedScrollingEnabled="false"
+            android:paddingHorizontal="16dp"
+            android:orientation="horizontal"
+            android:overScrollMode="never"
+            android:scrollbars="horizontal" />
     </LinearLayout>
-
-
-    <!-- RecyclerView for Hot Deals -->
-    <!-- RecyclerView for Hot Deals -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_hot_deals"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:nestedScrollingEnabled="false"
-        android:paddingHorizontal="16dp"
-        android:orientation="horizontal"
-        android:overScrollMode="never"
-        android:scrollbars="horizontal"/>
-
-</LinearLayout>
+</ScrollView>

@@ -13,6 +13,10 @@ public class Product implements Serializable {
     @SerializedName("image_url")
     private String imageUrl;
 
+    @SerializedName("product_url")
+    private String productUrl;
+
+
     @SerializedName("title")
     private String name;
 
@@ -46,6 +50,13 @@ public class Product implements Serializable {
     public int getImageResId() { return imageResId; }
     public String getImageUrl() { return imageUrl; }
     public String getName() { return name; }
+
+    public String getProductUrl() {
+        return productUrl;
+    }
+
+
+    public String getTitle() { return name; }
     public List<String> getProperties() { return properties; }
     public String getPrice() { return price; }
     public String getMrp() { return mrp; }

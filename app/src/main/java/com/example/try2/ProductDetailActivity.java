@@ -1,5 +1,9 @@
-// File name must be: ProductDetailActivity.java
+// File: ProductDetailActivity.java
 package com.example.try2;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.View;
+import android.widget.Button;
 
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -10,10 +14,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -37,43 +37,53 @@ public class ProductDetailActivity extends AppCompatActivity {
         // Strikethrough on MRP
         mrp.setPaintFlags(mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
-        // Call API
-        ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        Call<Product> call = api.getProduct(); // If using mock API without ID
+        // ✅ Get the product object passed via Intent
+        Product product = (Product) getIntent().getSerializableExtra("product");
 
-        call.enqueue(new Callback<Product>() {
-            @Override
-            public void onResponse(Call<Product> call, Response<Product> response) {
-                if (!isFinishing() && !isDestroyed() && response.isSuccessful() && response.body() != null) {
-                    Product product = response.body();
+        if (product != null) {
+            // Set data
+            title.setText(product.getName());
 
-                    title.setText(product.getName());
-                    if (product.getProperties() != null) {
-                        StringBuilder descBuilder = new StringBuilder();
-                        for (String prop : product.getProperties()) {
-                            descBuilder.append("• ").append(prop).append("\n");
-                        }
-                        properties.setText(descBuilder.toString().trim());
-                    }
-
-                    price.setText(product.getPrice());
-                    mrp.setText(product.getMrp());
-                    mrp.setPaintFlags(mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    discount.setText(product.getDiscount());
-
-                    Glide.with(ProductDetailActivity.this)
-                            .load(product.getImageUrl())
-                            .placeholder(R.drawable.placeholder_image)
-                            .into(productImage);
-                } else {
-                    Toast.makeText(ProductDetailActivity.this, "Failed to get product data.", Toast.LENGTH_SHORT).show();
+            // Set bullet-style properties
+            if (product.getProperties() != null) {
+                StringBuilder descBuilder = new StringBuilder();
+                for (String prop : product.getProperties()) {
+                    descBuilder.append("• ").append(prop).append("\n");
                 }
+                properties.setText(descBuilder.toString().trim());
             }
 
-            @Override
-            public void onFailure(Call<Product> call, Throwable t) {
-                Toast.makeText(ProductDetailActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            price.setText(product.getPrice());
+            mrp.setText(product.getMrp());
+            discount.setText(product.getDiscount());
+
+            // Set lowest price label
+            if (product.isLowest()) {
+                lowestLabel.setText("Lowest Price");
+                lowestLabel.setVisibility(TextView.VISIBLE);
+            } else {
+                lowestLabel.setVisibility(TextView.GONE);
             }
-        });
+
+            Glide.with(this)
+                    .load(product.getImageUrl())
+                    .placeholder(R.drawable.placeholder_image)
+                    .into(productImage);
+            Button viewOnFlipkartButton = findViewById(R.id.view_on_platform);
+
+            if (product.getProductUrl() != null && !product.getProductUrl().isEmpty()) {
+                viewOnFlipkartButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(product.getProductUrl()));
+                    startActivity(intent);
+                });
+            } else {
+                viewOnFlipkartButton.setOnClickListener(v -> {
+                    Toast.makeText(this, "Flipkart link not available", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+        } else {
+            Toast.makeText(this, "Product not found.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

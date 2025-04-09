@@ -34,26 +34,27 @@ public class HomeActivity extends AppCompatActivity {
         adapter = new ProductAdapter(this, productList);
         recyclerView.setAdapter(adapter);
 
-        loadSingleProduct(); // Use the existing getProduct() method
+        loadProduct(); // Use the existing getProduct() method
     }
 
-    private void loadSingleProduct() {
+    private void loadProduct() {
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        Call<Product> call = api.getProduct(); // ✅ Call the existing method
+        Call<List<Product>> call = api.getProduct(); // ✅ Call the existing method
 
-        call.enqueue(new Callback<Product>() {
+        call.enqueue(new Callback<List<Product>>() {
             @Override
-            public void onResponse(Call<Product> call, Response<Product> response) {
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    productList.add(response.body());
+                    productList.clear();
+                    productList.addAll(response.body());
                     adapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(HomeActivity.this, "Failed to fetch product.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this, "Failed to fetch products.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Product> call, Throwable t) {
+            public void onFailure(Call<List<Product>> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
