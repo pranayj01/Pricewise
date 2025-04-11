@@ -3,26 +3,42 @@ package com.example.try2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int RC_SIGN_IN = 1001;
 
     private EditText emailInput, passwordInput;
     private MaterialButton loginButton;
     private TextView createAccount;
+    private ImageView google_auth;
     private boolean doubleBackPressed = false;
     private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,55 +50,70 @@ public class MainActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
         createAccount = findViewById(R.id.create_account);
+        google_auth = findViewById(R.id.google_icon);
 
-        // Optimize images loaded from layout
+
+
         optimizeLayoutImages();
 
         mAuth = FirebaseAuth.getInstance();
+        configureGoogleSignIn();
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUser();
-            }
+        loginButton.setOnClickListener(v -> loginUser());
+
+        createAccount.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+            startActivity(intent);
         });
 
-        createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
-                startActivity(intent);
-            }
-        });
+        google_auth.setOnClickListener(v -> googleAuth());
+
+
     }
 
-    /**
-     * Optimize images loaded directly from layout XML
-     * This prevents "Canvas: trying to draw too large bitmap" errors
-     */
-    private void optimizeLayoutImages() {
-        try {
-            // Find all ImageViews with direct drawable references in the layout
-            ImageView googleIcon = findViewById(R.id.google_icon);
-            ImageView flipkartIcon = findViewById(R.id.flipkart_icon);
-            ImageView amazonIcon = findViewById(R.id.amazon_icon);
+    private void configureGoogleSignIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // Ensure this is correctly defined in strings.xml
+                .requestEmail()
+                .build();
 
-            // Use BitmapUtils to load images efficiently
-            if (googleIcon != null) {
-                BitmapUtils.loadDrawableIntoImageView(this, googleIcon, R.drawable.google);
-            }
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
 
-            if (flipkartIcon != null) {
-                BitmapUtils.loadDrawableIntoImageView(this, flipkartIcon, R.drawable.flipcart);
-            }
+    private void googleAuth() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
 
-            if (amazonIcon != null) {
-                BitmapUtils.loadDrawableIntoImageView(this, amazonIcon, R.drawable.amazon);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                Toast.makeText(this, "Google sign-in failed", Toast.LENGTH_SHORT).show();
+                Log.w("MainActivity", "Google sign-in failed", e);
             }
-        } catch (Exception e) {
-            // Log error but don't crash
-            e.printStackTrace();
         }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void loginUser() {
@@ -97,14 +128,34 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                        startActivity(intent);
+                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
                         finish();
                     } else {
                         Toast.makeText(MainActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void optimizeLayoutImages() {
+        try {
+            ImageView googleIcon = findViewById(R.id.google_icon);
+            ImageView flipkartIcon = findViewById(R.id.flipkart_icon);
+            ImageView amazonIcon = findViewById(R.id.amazon_icon);
+
+            if (googleIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, googleIcon, R.drawable.google);
+            }
+
+            if (flipkartIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, flipkartIcon, R.drawable.flipcart);
+            }
+
+            if (amazonIcon != null) {
+                BitmapUtils.loadDrawableIntoImageView(this, amazonIcon, R.drawable.amazon);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

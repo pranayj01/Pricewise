@@ -33,13 +33,12 @@ android {
     }
 }
 
-
-
-
-
 dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -51,6 +50,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.google.firebase:firebase-auth:23.2.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.material:material:1.11.0")
+
 }

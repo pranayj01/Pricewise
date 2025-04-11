@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -39,6 +40,8 @@ public class HomeActivity extends AppCompatActivity {
         optimizeLayoutImages();
 
         recyclerView = findViewById(R.id.recycler_hot_deals);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         adapter = new ProductAdapter(this, displayList);
@@ -52,6 +55,28 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         loadProduct();
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if(itemId == R.id.nav_home){
+//                startActivity(new Intent(HomeActivity.this, HomeActivity.class));
+                return true;
+            }
+            else if(itemId == R.id.nav_search){
+                startActivity(new Intent(HomeActivity.this, SearchActivity.class));
+                finish();
+                return true;
+            }
+            else if(itemId == R.id.nav_profile){
+                startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
+        // Optional: Set default selected item
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 
     private void optimizeLayoutImages() {

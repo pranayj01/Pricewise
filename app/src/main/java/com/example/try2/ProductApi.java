@@ -7,6 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface ProductApi {
-    @GET("4e71913b-6aeb-46da-af8e-8c454ce70092")
+    @GET("7c8770d0-349e-49a4-9ff4-df82b3db6520")
     Call<List<Product>> getProduct();
 }

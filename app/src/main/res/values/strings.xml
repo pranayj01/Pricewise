@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">try2</string>
+    <string name="default_web_client_id">http://1084415096465-274jhjaomc952v6dqe79krtu2c84fujg.apps.googleusercontent.com</string>
 </resources>

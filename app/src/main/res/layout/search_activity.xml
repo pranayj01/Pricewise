@@ -105,57 +105,6 @@
                     android:src="@drawable/search" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/search_preferences"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:text=""
-                android:textColor="#6200EE"
-                android:textSize="14sp" />
-
-            <!-- Hot Deals Header -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/hot_deals_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Hot Deals"
-                    android:textColor="@color/darkblue"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/view_more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View More "
-                    android:textColor="@color/green"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:padding="4dp" />
-            </LinearLayout>
-
-            <!-- RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_hot_deals"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:nestedScrollingEnabled="false"
-                android:paddingHorizontal="16dp"
-                android:orientation="horizontal"
-                android:overScrollMode="never"
-                android:scrollbars="horizontal" />
         </LinearLayout>
     </ScrollView>
 
@@ -173,5 +122,7 @@
         app:itemIconTint="@drawable/bottom_nav_icon_color"
         app:itemTextColor="@drawable/bottom_nav_icon_color"
         app:itemBackground="@android:color/transparent" />
+
+
 
 </LinearLayout>
