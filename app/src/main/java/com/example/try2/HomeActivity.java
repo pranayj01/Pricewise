@@ -96,34 +96,74 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    // In HomeActivity.java, replace the loadProduct() method with this:
+
     private void loadProduct() {
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        Call<List<Product>> call = api.getProduct();
 
-        call.enqueue(new Callback<List<Product>>() {
+        // Load Flipkart products
+        Call<List<Product>> flipkartCall = api.getFlipkartProducts();
+        flipkartCall.enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    fullProductList.clear();
-                    fullProductList.addAll(response.body());
+                    List<Product> flipkartProducts = response.body();
+                    for (Product product : flipkartProducts) {
+                        product.setPlatform("Flipkart");
+                    }
+                    fullProductList.addAll(flipkartProducts);
 
-                    // Shuffle and pick 5 random items for homepage
-                    displayList.clear();
-                    Collections.shuffle(fullProductList);
-                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
-
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(HomeActivity.this, "Failed to fetch products.", Toast.LENGTH_SHORT).show();
+                    // After loading Flipkart, load Amazon
+                    loadAmazonProducts();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "Flipkart API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                // Try loading Amazon even if Flipkart fails
+                loadAmazonProducts();
             }
         });
     }
+
+    private void loadAmazonProducts() {
+        ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
+        Call<List<Product>> amazonCall = api.getAmazonProducts();
+
+        amazonCall.enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Product> amazonProducts = response.body();
+                    for (Product product : amazonProducts) {
+                        product.setPlatform("Amazon");
+                    }
+                    fullProductList.addAll(amazonProducts);
+
+                    // Shuffle and pick 5 random items for homepage
+                    displayList.clear();
+                    Collections.shuffle(fullProductList);
+                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Toast.makeText(HomeActivity.this, "Amazon API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+
+                // Still show products if we have Flipkart products
+                if (!fullProductList.isEmpty()) {
+                    displayList.clear();
+                    Collections.shuffle(fullProductList);
+                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
 
     @Override
     public void onBackPressed() {

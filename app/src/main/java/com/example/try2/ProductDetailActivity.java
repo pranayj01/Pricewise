@@ -19,6 +19,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private TextView title, properties, price, mrp, discount, lowestLabel;
     private ImageView productImage;
+    private TextView platform;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +34,28 @@ public class ProductDetailActivity extends AppCompatActivity {
         mrp = findViewById(R.id.product_mrp);
         discount = findViewById(R.id.product_discount);
         lowestLabel = findViewById(R.id.lowest_price_label);
-
+        platform = findViewById(R.id.product_platform);
         // Strikethrough on MRP
         mrp.setPaintFlags(mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         // ✅ Get the product object passed via Intent
         Product product = (Product) getIntent().getSerializableExtra("product");
-
+        Button viewOnFlipkartButton = findViewById(R.id.view_on_platform);
         if (product != null) {
             // Set data
             title.setText(product.getName());
-
+            platform.setText(product.getPlatform());
+            viewOnFlipkartButton.setText("VIEW ON " + product.getPlatform().toUpperCase());
+            if (product.getProductUrl() != null && !product.getProductUrl().isEmpty()) {
+                viewOnFlipkartButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(product.getProductUrl()));
+                    startActivity(intent);
+                });
+            } else {
+                viewOnFlipkartButton.setOnClickListener(v -> {
+                    Toast.makeText(this, product.getPlatform() + " link not available", Toast.LENGTH_SHORT).show();
+                });
+            }
             // Set bullet-style properties
             if (product.getProperties() != null) {
                 StringBuilder descBuilder = new StringBuilder();
@@ -72,7 +84,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     .override(1024, 1024) // Resize large images
                     .centerInside()
                     .into(productImage);
-            Button viewOnFlipkartButton = findViewById(R.id.view_on_platform);
+
 
             if (product.getProductUrl() != null && !product.getProductUrl().isEmpty()) {
                 viewOnFlipkartButton.setOnClickListener(v -> {

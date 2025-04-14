@@ -12,6 +12,17 @@ public class Product implements Serializable {
     // For API-based image
     @SerializedName("image_url")
     private String imageUrl;
+    // Add this field
+    private String platform;
+
+    // Add getter and setter
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
 
     @SerializedName("product_url")
     private String productUrl;
