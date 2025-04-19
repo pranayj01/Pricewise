@@ -13,7 +13,6 @@ public interface ProductApi {
     @GET("734be14f-e0e8-4845-b3e6-5dd6aba52881") // Amazon endpoint (replace with actual endpoint)
     Call<List<Product>> getAmazonProducts();
 
-    @GET("025cf0f6-471b-4327-8ae2-973e27c36a81") // Your exact mocky.io endpoint
-    Call<List<PriceHistory>> getPriceHistory();
-
+    @GET("dc587bba-1863-4549-8813-4406e054ed79") // your mocky ID
+    Call<List<PriceHistoryWrapper>> getAllPriceHistories();
 }

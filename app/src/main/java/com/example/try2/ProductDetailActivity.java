@@ -133,25 +133,31 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        Call<List<PriceHistory>> call = api.getPriceHistory();
+        Call<List<PriceHistoryWrapper>> call = api.getAllPriceHistories();
 
-
-        call.enqueue(new Callback<List<PriceHistory>>() {
+        call.enqueue(new Callback<List<PriceHistoryWrapper>>() {
             @Override
-            public void onResponse(Call<List<PriceHistory>> call, Response<List<PriceHistory>> response) {
+            public void onResponse(Call<List<PriceHistoryWrapper>> call, Response<List<PriceHistoryWrapper>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    updatePriceChart(response.body());
+                    for (PriceHistoryWrapper wrapper : response.body()) {
+                        if (wrapper.getProductId().equals(product.getId())) {
+                            updatePriceChart(wrapper.getHistory());
+                            return;
+                        }
+                    }
+                    priceChart.setNoDataText("No price history available for this product");
                 } else {
                     priceChart.setNoDataText("No price history available");
                 }
             }
 
             @Override
-            public void onFailure(Call<List<PriceHistory>> call, Throwable t) {
+            public void onFailure(Call<List<PriceHistoryWrapper>> call, Throwable t) {
                 priceChart.setNoDataText("Error loading price history");
             }
         });
     }
+
 
     private void updatePriceChart(List<PriceHistory> priceHistory) {
         List<Entry> entries = new ArrayList<>();
