@@ -23,7 +23,31 @@ public class Product implements Serializable {
     public void setPlatform(String platform) {
         this.platform = platform;
     }
+    @SerializedName("price_history")
+    private List<PriceHistory> priceHistory;
 
+    public List<PriceHistory> getPriceHistory() {
+        return priceHistory;
+    }
+
+    public void setPriceHistory(List<PriceHistory> priceHistory) {
+        this.priceHistory = priceHistory;
+    }
+
+    @SerializedName("id")
+    private String id;  // Add this field
+
+    // ... your existing fields ...
+
+    // Add getter for ID
+    public String getId() {
+        return id;
+    }
+
+    // Add setter for ID if needed
+    public void setId(String id) {
+        this.id = id;
+    }
     @SerializedName("product_url")
     private String productUrl;
 

@@ -1,12 +1,12 @@
-// File: ProductDetailActivity.java
 package com.example.try2;
+
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
-import android.graphics.Paint;
-import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,19 +14,39 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
     private TextView title, properties, price, mrp, discount, lowestLabel;
     private ImageView productImage;
     private TextView platform;
+    private LineChart priceChart;
+    private Product product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        // Bind views
+        // Initialize views
+        priceChart = findViewById(R.id.price_graph);
         productImage = findViewById(R.id.product_image);
         title = findViewById(R.id.product_name);
         properties = findViewById(R.id.product_description);
@@ -35,27 +55,19 @@ public class ProductDetailActivity extends AppCompatActivity {
         discount = findViewById(R.id.product_discount);
         lowestLabel = findViewById(R.id.lowest_price_label);
         platform = findViewById(R.id.product_platform);
-        // Strikethrough on MRP
-        mrp.setPaintFlags(mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        Button viewOnPlatformButton = findViewById(R.id.view_on_platform);
 
-        // ✅ Get the product object passed via Intent
-        Product product = (Product) getIntent().getSerializableExtra("product");
-        Button viewOnFlipkartButton = findViewById(R.id.view_on_platform);
+        // Setup empty chart
+        setupEmptyChart();
+
+        // Get product from intent
+        product = (Product) getIntent().getSerializableExtra("product");
         if (product != null) {
-            // Set data
+            // Set product data
             title.setText(product.getName());
             platform.setText(product.getPlatform());
-            viewOnFlipkartButton.setText("VIEW ON " + product.getPlatform().toUpperCase());
-            if (product.getProductUrl() != null && !product.getProductUrl().isEmpty()) {
-                viewOnFlipkartButton.setOnClickListener(v -> {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(product.getProductUrl()));
-                    startActivity(intent);
-                });
-            } else {
-                viewOnFlipkartButton.setOnClickListener(v -> {
-                    Toast.makeText(this, product.getPlatform() + " link not available", Toast.LENGTH_SHORT).show();
-                });
-            }
+            viewOnPlatformButton.setText("VIEW ON " + product.getPlatform().toUpperCase());
+
             // Set bullet-style properties
             if (product.getProperties() != null) {
                 StringBuilder descBuilder = new StringBuilder();
@@ -65,40 +77,118 @@ public class ProductDetailActivity extends AppCompatActivity {
                 properties.setText(descBuilder.toString().trim());
             }
 
+            // Set price information
             price.setText(product.getPrice());
             mrp.setText(product.getMrp());
+            mrp.setPaintFlags(mrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             discount.setText(product.getDiscount());
 
             // Set lowest price label
             if (product.isLowest()) {
-                lowestLabel.setText("Lowest Price");
-                lowestLabel.setVisibility(TextView.VISIBLE);
+                lowestLabel.setVisibility(View.VISIBLE);
             } else {
-                lowestLabel.setVisibility(TextView.GONE);
+                lowestLabel.setVisibility(View.GONE);
             }
 
-            // Load image with bitmap size optimization to prevent "Canvas: trying to draw too large bitmap" error
+            // Load product image
             Glide.with(this)
                     .load(product.getImageUrl())
                     .placeholder(R.drawable.placeholder_image)
-                    .override(1024, 1024) // Resize large images
+                    .override(1024, 1024)
                     .centerInside()
                     .into(productImage);
 
-
+            // Set click listener for platform button
             if (product.getProductUrl() != null && !product.getProductUrl().isEmpty()) {
-                viewOnFlipkartButton.setOnClickListener(v -> {
+                viewOnPlatformButton.setOnClickListener(v -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(product.getProductUrl()));
                     startActivity(intent);
                 });
             } else {
-                viewOnFlipkartButton.setOnClickListener(v -> {
-                    Toast.makeText(this, "Flipkart link not available", Toast.LENGTH_SHORT).show();
+                viewOnPlatformButton.setOnClickListener(v -> {
+                    Toast.makeText(this, product.getPlatform() + " link not available", Toast.LENGTH_SHORT).show();
                 });
             }
 
+            // Fetch price history
+            fetchPriceHistory();
         } else {
             Toast.makeText(this, "Product not found.", Toast.LENGTH_SHORT).show();
+            finish();
         }
+    }
+
+    private void setupEmptyChart() {
+        priceChart.setNoDataText("Loading price history...");
+        priceChart.setNoDataTextColor(Color.GRAY);
+        priceChart.getDescription().setEnabled(false);
+        priceChart.getAxisRight().setEnabled(false);
+        priceChart.getLegend().setEnabled(false);
+    }
+
+    private void fetchPriceHistory() {
+        if (product == null || product.getId() == null) {
+            priceChart.setNoDataText("Product information unavailable");
+            return;
+        }
+
+        ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
+        Call<List<PriceHistory>> call = api.getPriceHistory();
+
+
+        call.enqueue(new Callback<List<PriceHistory>>() {
+            @Override
+            public void onResponse(Call<List<PriceHistory>> call, Response<List<PriceHistory>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    updatePriceChart(response.body());
+                } else {
+                    priceChart.setNoDataText("No price history available");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PriceHistory>> call, Throwable t) {
+                priceChart.setNoDataText("Error loading price history");
+            }
+        });
+    }
+
+    private void updatePriceChart(List<PriceHistory> priceHistory) {
+        List<Entry> entries = new ArrayList<>();
+
+        // Convert price history to entries
+        for (int i = 0; i < priceHistory.size(); i++) {
+            PriceHistory history = priceHistory.get(i);
+            entries.add(new Entry(i, history.getPrice()));
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "Price History");
+        dataSet.setColor(Color.parseColor("#FF9800"));
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setLineWidth(2f);
+        dataSet.setCircleColor(Color.parseColor("#FF9800"));
+        dataSet.setCircleRadius(4f);
+        dataSet.setValueTextSize(10f);
+
+        LineData lineData = new LineData(dataSet);
+        priceChart.setData(lineData);
+
+        // Customize X axis
+        XAxis xAxis = priceChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = (int) value;
+                if (index >= 0 && index < priceHistory.size()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd", Locale.getDefault());
+                    return sdf.format(priceHistory.get(index).getDate());
+                }
+                return "";
+            }
+        });
+
+        // Refresh chart
+        priceChart.invalidate();
     }
 }
