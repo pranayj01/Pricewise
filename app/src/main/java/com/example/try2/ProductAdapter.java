@@ -1,7 +1,6 @@
 package com.example.try2;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +19,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     private List<Product> productList;
     private Context context;
+    private OnProductClickListener listener;
 
-    public ProductAdapter(Context context, List<Product> productList) {
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+    }
+
+    public ProductAdapter(Context context, List<Product> productList, OnProductClickListener listener) {
         this.context = context;
         this.productList = productList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,7 +42,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
 
-        // Load image
         Glide.with(context)
                 .load(product.getImageUrl())
                 .placeholder(R.drawable.placeholder_image)
@@ -45,17 +49,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .fitCenter()
                 .into(holder.productImage);
 
-        // Set product data
-        holder.productName.setText(product.getTitle());
+        holder.productName.setText(product.getName());
         holder.productPrice.setText(product.getPrice());
         holder.productMrp.setText(product.getMrp());
         holder.productMrp.setPaintFlags(holder.productMrp.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         holder.productDiscount.setText(product.getDiscount());
 
-        // Set platform tag
         if (product.getPlatform() != null) {
             holder.productPlatformTag.setText(product.getPlatform());
-            // Set different background colors based on platform
             if ("Amazon".equalsIgnoreCase(product.getPlatform())) {
                 holder.productPlatformTag.setBackgroundResource(R.drawable.amazon_tag_bg);
             } else {
@@ -66,11 +67,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             holder.productPlatformTag.setVisibility(View.GONE);
         }
 
-        // Handle click
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ProductDetailActivity.class);
-            intent.putExtra("product", product);
-            context.startActivity(intent);
+            if (listener != null) {
+                listener.onProductClick(product);
+            }
         });
     }
 
@@ -79,7 +79,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
-    // Update the list and notify the adapter
     public void updateList(List<Product> filteredList) {
         productList = filteredList;
         notifyDataSetChanged();

@@ -46,19 +46,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize FirebaseAuth instance
+        mAuth = FirebaseAuth.getInstance();
+
+        // Check if the user is already logged in
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // User is logged in, redirect to HomeActivity
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
+            finish();  // Finish MainActivity so that user can't return to login screen
+            return;  // Prevent further code execution in onCreate()
+        }
+
+        // Set up UI elements
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
         loginButton = findViewById(R.id.login_button);
         createAccount = findViewById(R.id.create_account);
         google_auth = findViewById(R.id.google_icon);
 
-
-
         optimizeLayoutImages();
 
-        mAuth = FirebaseAuth.getInstance();
+        // Configure Google Sign-In
         configureGoogleSignIn();
 
+        // Set up onClickListeners
         loginButton.setOnClickListener(v -> loginUser());
 
         createAccount.setOnClickListener(v -> {
@@ -67,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         google_auth.setOnClickListener(v -> googleAuth());
-
-
     }
 
     private void configureGoogleSignIn() {

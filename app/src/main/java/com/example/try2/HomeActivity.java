@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +43,13 @@ public class HomeActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        adapter = new ProductAdapter(this, displayList);
+        // ✅ FIXED: pass 3 parameters including click listener
+        adapter = new ProductAdapter(this, displayList, product -> {
+            Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product", product);
+            startActivity(intent);
+        });
+
         recyclerView.setAdapter(adapter);
 
         TextView viewMore = findViewById(R.id.view_more);
@@ -60,7 +65,6 @@ public class HomeActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if(itemId == R.id.nav_home){
-//                startActivity(new Intent(HomeActivity.this, HomeActivity.class));
                 return true;
             }
             else if(itemId == R.id.nav_search){
@@ -75,7 +79,7 @@ public class HomeActivity extends AppCompatActivity {
             }
             return false;
         });
-        // Optional: Set default selected item
+
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 
@@ -95,11 +99,9 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    // In HomeActivity.java, replace the loadProduct() method with this:
 
     private void loadProduct() {
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-        // Load Flipkart products
         Call<List<Product>> flipkartCall = api.getFlipkartProducts();
         flipkartCall.enqueue(new Callback<List<Product>>() {
             @Override
@@ -110,16 +112,14 @@ public class HomeActivity extends AppCompatActivity {
                         product.setPlatform("Flipkart");
                     }
                     fullProductList.addAll(flipkartProducts);
-                    // After loading Flipkart, load Amazon
-                    loadAmazonProducts();
+                    loadAmazonProducts(); // then load Amazon
                 }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Flipkart API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                // Try loading Amazon even if Flipkart fails
-                loadAmazonProducts();
+                loadAmazonProducts(); // still load Amazon
             }
         });
     }
@@ -138,7 +138,6 @@ public class HomeActivity extends AppCompatActivity {
                     }
                     fullProductList.addAll(amazonProducts);
 
-                    // Shuffle and pick 5 random items for homepage
                     displayList.clear();
                     Collections.shuffle(fullProductList);
                     displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
@@ -150,7 +149,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onFailure(Call<List<Product>> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Amazon API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
 
-                // Still show products if we have Flipkart products
                 if (!fullProductList.isEmpty()) {
                     displayList.clear();
                     Collections.shuffle(fullProductList);
@@ -160,7 +158,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     public void onBackPressed() {

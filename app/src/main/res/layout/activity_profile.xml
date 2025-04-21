@@ -136,6 +136,7 @@
 
                 <!-- Change Password Section -->
                 <LinearLayout
+                    android:id="@+id/change_password"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:orientation="horizontal"
@@ -164,6 +165,7 @@
 
                 <!-- Logout Section -->
                 <LinearLayout
+                    android:id="@+id/logout_layout"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:orientation="horizontal"
@@ -188,10 +190,12 @@
                         android:textColor="#e65100" />
                 </LinearLayout>
 
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#dddddd"/>
 
                 <!-- Delete Account Section -->
                 <LinearLayout
+                    android:id="@+id/delete_acc"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
                     android:orientation="horizontal"

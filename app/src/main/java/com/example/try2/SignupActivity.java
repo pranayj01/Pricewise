@@ -65,7 +65,6 @@ public class SignupActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
     private void registerUser() {
         String name = nameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
@@ -105,6 +104,7 @@ public class SignupActivity extends AppCompatActivity {
                                     if (dbTask.isSuccessful()) {
                                         Toast.makeText(SignupActivity.this, "Signup successful! Please verify your email before logging in.", Toast.LENGTH_LONG).show();
                                         mAuth.signOut(); // Prevent login before email is verified
+                                        // Redirect to MainActivity instead of MainActivity
                                         startActivity(new Intent(SignupActivity.this, MainActivity.class));
                                         finish();
                                     } else {
