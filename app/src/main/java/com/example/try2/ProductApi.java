@@ -10,7 +10,7 @@ public interface ProductApi {
     @GET("4dfdf0e0-39b0-4209-a2f4-efa5442c468e")
     Call<List<Product>> getFlipkartProducts();
 
-    @GET("734be14f-e0e8-4845-b3e6-5dd6aba52881") // Amazon endpoint (replace with actual endpoint)
+    @GET("06d3f600-07f0-4405-997d-29d67d5b9875") // Amazon endpoint (replace with actual endpoint)
     Call<List<Product>> getAmazonProducts();
 
     @GET("dc587bba-1863-4549-8813-4406e054ed79") // your mocky ID

@@ -20,13 +20,12 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_activity);  // ✅ Correct layout file name
+        setContentView(R.layout.search_activity);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         searchInput = findViewById(R.id.search_input);
         searchIcon = findViewById(R.id.search_icon);
 
-        // Setup bottom navigation
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -45,7 +44,6 @@ public class SearchActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.nav_search);
 
-        // Trigger search on icon click or keyboard "Search" press
         searchIcon.setOnClickListener(v -> performSearch());
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -59,8 +57,9 @@ public class SearchActivity extends AppCompatActivity {
     private void performSearch() {
         String query = searchInput.getText().toString().trim();
         if (!query.isEmpty()) {
-            Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);  // ✅ Corrected class name
+            Intent intent = new Intent(SearchActivity.this, SearchResultActivity.class);
             intent.putExtra("search_query", query);
+            intent.putExtra("source", "amazon");  // You can switch to "flipkart" as needed
             startActivity(intent);
         } else {
             Toast.makeText(SearchActivity.this, "Please enter a search query", Toast.LENGTH_SHORT).show();
