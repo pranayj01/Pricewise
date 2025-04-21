@@ -70,6 +70,12 @@ public class Product implements Serializable {
 
     @SerializedName("is_lowest")
     private boolean isLowest;
+    @SerializedName("category")
+    private String category;
+
+    @SerializedName("brand")
+    private String brand;
+
 
     // --- Constructors ---
 
@@ -97,6 +103,13 @@ public class Product implements Serializable {
     public String getMrp() { return mrp; }
     public String getDiscount() { return discount; }
     public boolean isLowest() { return isLowest; }
+    public String getCategory() {
+        return category;
+    }
+    public String getBrand() {
+        return brand;
+    }
+
 
     // --- Optional Setter ---
     public void setProperties(List<String> properties) {

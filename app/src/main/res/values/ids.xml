@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="switchFloatingButton" type="id" />
+    <item name="radioGroupTheme" type="id" />
+    <item name="radioSystem" type="id" />
+    <item name="radioLight" type="id" />
+    <item name="radioDark" type="id" />
+</resources>

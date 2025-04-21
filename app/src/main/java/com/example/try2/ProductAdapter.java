@@ -79,6 +79,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
+    // Update the list and notify the adapter
+    public void updateList(List<Product> filteredList) {
+        productList = filteredList;
+        notifyDataSetChanged();
+    }
+
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName, productPrice, productMrp, productDiscount, productPlatformTag;

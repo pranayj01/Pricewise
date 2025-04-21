@@ -2,7 +2,6 @@ package com.example.try2;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,7 +27,6 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        // Optimize images loaded from layout
         optimizeLayoutImages();
 
         mAuth = FirebaseAuth.getInstance();
@@ -48,31 +46,22 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Optimize images loaded directly from layout XML
-     * This prevents "Canvas: trying to draw too large bitmap" errors
-     */
     private void optimizeLayoutImages() {
         try {
-            // Find all ImageViews with direct drawable references in the layout
             ImageView googleIcon = findViewById(R.id.signup_google_icon);
             ImageView flipkartIcon = findViewById(R.id.signup_flipkart_icon);
             ImageView amazonIcon = findViewById(R.id.signup_amazon_icon);
 
-            // Use BitmapUtils to load images efficiently
             if (googleIcon != null) {
                 BitmapUtils.loadDrawableIntoImageView(this, googleIcon, R.drawable.google);
             }
-
             if (flipkartIcon != null) {
                 BitmapUtils.loadDrawableIntoImageView(this, flipkartIcon, R.drawable.flipcart);
             }
-
             if (amazonIcon != null) {
                 BitmapUtils.loadDrawableIntoImageView(this, amazonIcon, R.drawable.amazon);
             }
         } catch (Exception e) {
-            // Log error but don't crash
             e.printStackTrace();
         }
     }
@@ -101,25 +90,31 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
-                String userId = firebaseUser.getUid();
+                firebaseUser.sendEmailVerification().addOnCompleteListener(emailTask -> {
+                    if (emailTask.isSuccessful()) {
+                        String userId = firebaseUser.getUid();
 
-                HashMap<String, String> userData = new HashMap<>();
-                userData.put("name", name);
-                userData.put("email", email);
+                        HashMap<String, String> userData = new HashMap<>();
+                        userData.put("name", name);
+                        userData.put("email", email);
 
-                FirebaseDatabase.getInstance().getReference("Users")
-                        .child(userId)
-                        .setValue(userData)
-                        .addOnCompleteListener(dbTask -> {
-                            if (dbTask.isSuccessful()) {
-                                Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignupActivity.this, HomeActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Toast.makeText(SignupActivity.this, "Failed to save user info", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(userId)
+                                .setValue(userData)
+                                .addOnCompleteListener(dbTask -> {
+                                    if (dbTask.isSuccessful()) {
+                                        Toast.makeText(SignupActivity.this, "Signup successful! Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                                        mAuth.signOut(); // Prevent login before email is verified
+                                        startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        Toast.makeText(SignupActivity.this, "Failed to save user info", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             } else {
                 Toast.makeText(SignupActivity.this, "Signup Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

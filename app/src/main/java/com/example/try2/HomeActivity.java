@@ -37,7 +37,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
         optimizeLayoutImages();
 
         recyclerView = findViewById(R.id.recycler_hot_deals);
@@ -96,12 +95,10 @@ public class HomeActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
     // In HomeActivity.java, replace the loadProduct() method with this:
 
     private void loadProduct() {
         ProductApi api = ApiClient.getRetrofitInstance().create(ProductApi.class);
-
         // Load Flipkart products
         Call<List<Product>> flipkartCall = api.getFlipkartProducts();
         flipkartCall.enqueue(new Callback<List<Product>>() {
@@ -113,7 +110,6 @@ public class HomeActivity extends AppCompatActivity {
                         product.setPlatform("Flipkart");
                     }
                     fullProductList.addAll(flipkartProducts);
-
                     // After loading Flipkart, load Amazon
                     loadAmazonProducts();
                 }

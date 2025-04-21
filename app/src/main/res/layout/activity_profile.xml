@@ -1,70 +1,233 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Top curved background -->
-    <RelativeLayout
-        android:id="@+id/curved_header"
+    <!-- Scrollable content -->
+    <ScrollView
+        android:id="@+id/scrollContainer"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:background="@drawable/top_curve_shape">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:fillViewport="true">
 
-        <!-- Name text -->
-        <TextView
-            android:id="@+id/nameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kshitiz Kumar"
-            android:textColor="#FFFFFF"
-            android:textSize="35sp"
-            android:textStyle="bold"
-            android:layout_centerInParent="true" />
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <!-- Circular profile icon -->
-    <LinearLayout
-        android:id="@+id/profileImageLayout"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_below="@id/curved_header"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-50dp"
-        android:background="@drawable/circle_white"
-        android:elevation="4dp"
-        android:orientation="vertical"
-        android:gravity="center">
+            <!-- Curved Header -->
+            <RelativeLayout
+                android:id="@+id/curved_header"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="@drawable/top_curve_shape">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_profile_placeholder"
-            android:tint="#208d4d" />
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/nameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kshitiz Kumar"
+                    android:textColor="#FFFFFF"
+                    android:textSize="35sp"
+                    android:textStyle="bold"
+                    android:layout_centerInParent="true" />
+            </RelativeLayout>
 
-    <!-- View Profile Button -->
-    <Button
-        android:id="@+id/viewProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit Profile"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2bae66"
-        android:layout_below="@id/profileImageLayout"
-        android:layout_marginTop="24dp"
-        android:layout_centerHorizontal="true" />
+            <!-- Profile Image -->
+            <LinearLayout
+                android:id="@+id/profileImageLayout"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_below="@id/curved_header"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-50dp"
+                android:background="@drawable/circle_white"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
 
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_profile_placeholder"
+                    app:tint="#208d4d" />
+            </LinearLayout>
 
-    <!-- Bottom Navigation Bar -->
+            <!-- Edit Profile Button -->
+            <Button
+                android:id="@+id/viewProfileButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Profile"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#2bae66"
+                android:layout_below="@id/profileImageLayout"
+                android:layout_marginTop="24dp"
+                android:layout_centerHorizontal="true" />
+
+            <!-- Settings Section -->
+            <LinearLayout
+                android:id="@+id/settingsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/viewProfileButton"
+                android:layout_marginTop="30dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- App Settings Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/settings"
+                        android:tint="#2bae66" />
+
+                    <TextView
+                        android:id="@+id/settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="App Settings"
+                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="#333333"
+                        />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#dddddd"/>
+
+                <!-- Notification Settings Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_notifications"
+                        android:tint="#2bae66" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Notification Settings"
+                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="#333333" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#dddddd"/>
+
+                <!-- Change Password Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_lock"
+                        android:tint="#2bae66" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Change Password"
+                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="#333333" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#dddddd"/>
+
+                <!-- Logout Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_logout"
+                        android:tint="#e65100" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Logout"
+                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="#e65100" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#dddddd"/>
+
+                <!-- Delete Account Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:background="?android:selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_delete"
+                        android:tint="#b00020" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete Account"
+                        android:textSize="16sp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="#b00020" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <!-- Fixed Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_alignParentBottom="true"
         android:background="#FFFFFF"
-        android:paddingTop="0dp"
         android:elevation="8dp"
         app:menu="@menu/bottom_nav_bar"
         app:labelVisibilityMode="labeled"
