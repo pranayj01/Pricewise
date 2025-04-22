@@ -29,6 +29,15 @@ public class HomeActivity extends AppCompatActivity {
     private ProductAdapter adapter;
     private final List<Product> fullProductList = new ArrayList<>();
     private final List<Product> displayList = new ArrayList<>();
+
+    private RecyclerView electronicsRecyclerView;
+    private ProductAdapter electronicsAdapter;
+    private final List<Product> electronicsList = new ArrayList<>();
+
+    private RecyclerView healthRecyclerView;
+    private ProductAdapter healthAdapter;
+    private final List<Product> healthList = new ArrayList<>();
+
     private boolean doubleBackPressed = false;
 
     @Override
@@ -38,20 +47,37 @@ public class HomeActivity extends AppCompatActivity {
 
         optimizeLayoutImages();
 
+        // Hot Deals
         recyclerView = findViewById(R.id.recycler_hot_deals);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-        // ✅ FIXED: pass 3 parameters including click listener
         adapter = new ProductAdapter(this, displayList, product -> {
             Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
             intent.putExtra("product", product);
             startActivity(intent);
         });
-
         recyclerView.setAdapter(adapter);
 
+        // Electronics
+        electronicsRecyclerView = findViewById(R.id.recycler_electronics);
+        electronicsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        electronicsAdapter = new ProductAdapter(this, electronicsList, product -> {
+            Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product", product);
+            startActivity(intent);
+        });
+        electronicsRecyclerView.setAdapter(electronicsAdapter);
+
+        // Health
+        healthRecyclerView = findViewById(R.id.recycler_health);
+        healthRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        healthAdapter = new ProductAdapter(this, healthList, product -> {
+            Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product", product);
+            startActivity(intent);
+        });
+        healthRecyclerView.setAdapter(healthAdapter);
+
+        // View More Buttons
         TextView viewMore = findViewById(R.id.view_more);
         viewMore.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, AllProductsActivity.class);
@@ -59,20 +85,45 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        TextView viewMoreElectronics = findViewById(R.id.view_more_electronics);
+        viewMoreElectronics.setOnClickListener(v -> {
+            List<Product> electronicsOnly = new ArrayList<>();
+            for (Product product : fullProductList) {
+                if (product.getCategory() != null && product.getCategory().toLowerCase().contains("electronics")) {
+                    electronicsOnly.add(product);
+                }
+            }
+            Intent intent = new Intent(HomeActivity.this, AllProductsActivity.class);
+            intent.putExtra("all_products", new Gson().toJson(electronicsOnly));
+            startActivity(intent);
+        });
+
+        TextView viewMoreHealth = findViewById(R.id.view_more_health);
+        viewMoreHealth.setOnClickListener(v -> {
+            List<Product> healthOnly = new ArrayList<>();
+            for (Product product : fullProductList) {
+                if (product.getCategory() != null && product.getCategory().toLowerCase().contains("health")) {
+                    healthOnly.add(product);
+                }
+            }
+            Intent intent = new Intent(HomeActivity.this, AllProductsActivity.class);
+            intent.putExtra("all_products", new Gson().toJson(healthOnly));
+            startActivity(intent);
+        });
+
         loadProduct();
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            if(itemId == R.id.nav_home){
+            if (itemId == R.id.nav_home) {
                 return true;
-            }
-            else if(itemId == R.id.nav_search){
+            } else if (itemId == R.id.nav_search) {
                 startActivity(new Intent(HomeActivity.this, SearchActivity.class));
                 finish();
                 return true;
-            }
-            else if(itemId == R.id.nav_profile){
+            } else if (itemId == R.id.nav_profile) {
                 startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
                 finish();
                 return true;
@@ -112,14 +163,14 @@ public class HomeActivity extends AppCompatActivity {
                         product.setPlatform("Flipkart");
                     }
                     fullProductList.addAll(flipkartProducts);
-                    loadAmazonProducts(); // then load Amazon
+                    loadAmazonProducts();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Flipkart API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                loadAmazonProducts(); // still load Amazon
+                loadAmazonProducts();
             }
         });
     }
@@ -138,25 +189,50 @@ public class HomeActivity extends AppCompatActivity {
                     }
                     fullProductList.addAll(amazonProducts);
 
-                    displayList.clear();
-                    Collections.shuffle(fullProductList);
-                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
-                    adapter.notifyDataSetChanged();
+                    categorizeAndDisplay();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Amazon API error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-
-                if (!fullProductList.isEmpty()) {
-                    displayList.clear();
-                    Collections.shuffle(fullProductList);
-                    displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
-                    adapter.notifyDataSetChanged();
-                }
+                categorizeAndDisplay(); // even if Amazon fails
             }
         });
+    }
+
+    private void categorizeAndDisplay() {
+        // Categorize
+        electronicsList.clear();
+        healthList.clear();
+        for (Product product : fullProductList) {
+            if (product.getCategory() != null) {
+                String category = product.getCategory().toLowerCase();
+                if (category.contains("electronics")) {
+                    electronicsList.add(product);
+                } else if (category.contains("health") || category.contains("nutrition")) {
+                    healthList.add(product);
+                }
+            }
+        }
+
+        // Shuffle and show 5 from each
+        List<Product> shuffledElectronics = new ArrayList<>(electronicsList);
+        Collections.shuffle(shuffledElectronics);
+        electronicsList.clear();
+        electronicsList.addAll(shuffledElectronics.subList(0, Math.min(5, shuffledElectronics.size())));
+        electronicsAdapter.notifyDataSetChanged();
+
+        List<Product> shuffledHealth = new ArrayList<>(healthList);
+        Collections.shuffle(shuffledHealth);
+        healthList.clear();
+        healthList.addAll(shuffledHealth.subList(0, Math.min(5, shuffledHealth.size())));
+        healthAdapter.notifyDataSetChanged();
+
+        displayList.clear();
+        Collections.shuffle(fullProductList);
+        displayList.addAll(fullProductList.subList(0, Math.min(5, fullProductList.size())));
+        adapter.notifyDataSetChanged();
     }
 
     @Override
